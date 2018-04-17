@@ -26,27 +26,33 @@
 
     <div class="ui-g-12">
 
-      <p-dataTable [value]="pessoas" [paginator]="true" [rows]="pessoa.itensPorPagina" [responsive]="true" [lazy]="true" [totalRecords]="totalRegistros"
+      <p-table [value]="pessoas" [paginator]="true" [rows]="pessoa.itensPorPagina" [responsive]="true" [lazy]="true" [totalRecords]="totalRegistros"
         (onLazyLoad)="aoMudarPagina($event)">
 
-        <p-column field="nome" header="Nome"></p-column>
-        <p-column field="endereco.cidade" header="Cidade"></p-column>
-        <p-column field="endereco.estado" header="Estado"></p-column>
-        <p-column field="ativo" header="Status">
-          <ng-template let-pess="rowData" pTemplate="body">
-            <div class="ativar-desativar">
-              <a [pTooltip]="ehAtivo(pess)" (click)="mudarStatus(pess.nome, pess.codigo, pess.ativo)" tooltipPosition="top" href="javascript:;"
-              > {{ pess.ativo ? 'Ativo' : 'Inativo' }} </a>
-            </div>
-          </ng-template>
-        </p-column>
-        <p-column styleClass="col-acoes">
-          <ng-template let-pess="rowData" pTemplate="body">
-            <a pButton icon="fa-pencil" [routerLink]="['/pessoas', pess.codigo]" pTooltip="Editar" tooltipPosition="top"></a>
-            <button pButton (click)="confirmarExclusao(pess)" icon="fa-trash" pTooltip="Excluir" tooltipPosition="top"></button>
-          </ng-template>
-        </p-column>
-      </p-dataTable>
+        <ng-template pTemplate="header">
+            <tr>
+              <th>Nome</th>
+              <th>Cidade</th>
+              <th>Estado</th>
+              <th>Status</th>
+              <th class="col-acoes-header"></th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-pessoa>
+          <tr>
+            <td>{{ pessoa.nome }}</td>
+            <td>{{ pessoa.endereco.cidade }}</td>
+            <td>{{ pessoa.endereco.estado }}</td>
+            <td class="ativar-desativar"> <a [pTooltip]="ehAtivo(pessoa)" (click)="mudarStatus(pessoa.nome, pessoa.codigo, pessoa.ativo)" tooltipPosition="top" href="javascript:;"
+              > {{ pessoa.ativo ? 'Ativo' : 'Inativo' }} </a></td>
+            <td>
+                <button pButton icon="fa-pencil" [routerLink]="['/pessoas', pessoa.codigo]" pTooltip="Editar" tooltipPosition="top"></button>
+                <button pButton (click)="confirmarExclusao(pessoa)" icon="fa-trash" pTooltip="Excluir" tooltipPosition="top"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
 
     </div>
 

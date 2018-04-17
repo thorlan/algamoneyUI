@@ -1,9 +1,8 @@
 
-import { FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-
 
 import { ToastyService } from 'ng2-toasty';
 
@@ -12,6 +11,8 @@ import { PessoaService } from './../../pessoas/pessoa.service';
 import { CategoriaService } from './../../categorias/categoria.service';
 import { ErrorHandlerService } from './../../core/error-handler.service';
 import { Lancamento } from './../../core/model';
+
+
 
 @Component({
   selector: 'app-lancamento-cadastro',
@@ -27,8 +28,10 @@ export class LancamentoCadastroComponent implements OnInit {
 
   categorias = [];
   pessoas = [];
-  lancamento = new Lancamento();
+  // lancamento = new Lancamento();
   labelBotao = 'Salvar';
+
+  formulario: FormGroup;
 
   constructor(
     private categoriaService: CategoriaService,
@@ -38,9 +41,11 @@ export class LancamentoCadastroComponent implements OnInit {
     private toasty: ToastyService,
     private route: ActivatedRoute,
     private router: Router,
-    private title: Title) { }
+    private title: Title,
+    private formBuilder: FormBuilder) { }
 
   ngOnInit() {
+    this.configurarFormulario();
 
     this.title.setTitle('Novo lançamento');
     const codigo = this.route.snapshot.params['codigo'];
@@ -54,8 +59,38 @@ export class LancamentoCadastroComponent implements OnInit {
     this.carregarPessoas();
   }
 
-  get editando(){
-    return Boolean(this.lancamento.codigo);
+  configurarFormulario() {
+    this.formulario = this.formBuilder.group({
+      codigo: [null],
+      tipo: ['RECEITA', Validators.required],
+      dataVencimento: [null, Validators.required],
+      dataPagamento: [null],
+      descricao: [null, [this.validarObrigatoriedade, this.validarTamanhoMinimo(5)]],
+      valor: [null, Validators.required],
+      pessoa: this.formBuilder.group({
+        codigo: [null, Validators.required],
+        nome: [null]
+      }),
+      categoria: this.formBuilder.group({
+        codigo: [null, Validators.required],
+        nome: [null]
+      }),
+      observacao: [null]
+    });
+  }
+
+  validarObrigatoriedade(input: FormControl) {
+    return (input.value ? null : { obrigatoriedade: true} );
+  }
+
+  validarTamanhoMinimo(valor: number) {
+    return (input: FormControl) => {
+      return (!input.value || input.value.length >= valor) ? null : {tamanhoMinimo: { tamanho: valor }};
+    };
+  }
+
+  get editando() {
+    return Boolean(this.formulario.get('codigo').value);
   }
 
   carregarCategorias() {
@@ -78,43 +113,43 @@ export class LancamentoCadastroComponent implements OnInit {
       .catch(error => this.errorHandlerService.handle(error));
   }
 
-  salvar(form: FormControl) {
+  salvar() {
     if (this.editando) {
-      this.atualizarLancamento(form);
+      this.atualizarLancamento();
     } else {
-      this.adicionar(form);
+      this.adicionar();
     }
   }
 
-  adicionar(form: FormControl) {
-    this.lancamentoService.adicionar(this.lancamento)
+  adicionar() {
+    this.lancamentoService.adicionar(this.formulario.value)
       .then(lancamento => {
         this.toasty.success(`Lançamento de código número: ${lancamento.codigo} registrado com sucesso`);
         this.router.navigate(['/lancamentos', lancamento.codigo]);
       }).catch(error => this.errorHandlerService.handle(error));
   }
 
-  atualizarLancamento(form: FormControl) {
-    this.lancamentoService.atualizar(this.lancamento)
-    .then(lancamento => {
-      this.lancamento = lancamento;
-      this.toasty.success(`Lançamento atualizado com sucesso`);
-      this.title.setTitle(`Editando lançamento: ${this.lancamento.descricao}`);
-    }).catch(error => this.errorHandlerService.handle(error));
+  atualizarLancamento() {
+    this.lancamentoService.atualizar(this.formulario.value)
+      .then(lancamento => {
+        this.formulario.patchValue(lancamento);
+        this.toasty.success(`Lançamento atualizado com sucesso`);
+        this.title.setTitle(`Editando lançamento: ${this.formulario.get('descricao').value}`);
+      }).catch(error => this.errorHandlerService.handle(error));
   }
 
   buscarPorCodigo(codigo: number) {
 
     this.lancamentoService.buscarPorCodigo(codigo)
       .then(lancamento => {
-        this.lancamento = lancamento;
-        this.title.setTitle(`Editando lançamento: ${this.lancamento.descricao}`);
+        this.formulario.patchValue(lancamento);
+        this.title.setTitle(`Editando lançamento: ${this.formulario.get('descricao').value}`);
       }).catch(error => this.errorHandlerService.handle(error));
   }
 
-  novo(form: FormControl) {
-    form.reset();
-    setTimeout(function(){
+  novo() {
+    this.formulario.reset();
+    setTimeout(function () {
       this.lancamento = new Lancamento();
     }.bind(this), 1);
 
