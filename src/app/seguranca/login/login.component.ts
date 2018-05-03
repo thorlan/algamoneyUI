@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   login(usuario: string, senha: string) {
     this.authService.login(usuario, senha)
       .then(() => {
-        this.router.navigate(['lancamentos']);
+        this.router.navigate(['/dashboard']);
       })
       .catch(error => {
         this.errorHandler.handle(error);

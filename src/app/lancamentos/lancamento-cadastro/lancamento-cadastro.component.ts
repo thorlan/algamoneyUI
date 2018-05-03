@@ -32,6 +32,7 @@ export class LancamentoCadastroComponent implements OnInit {
   labelBotao = 'Salvar';
 
   formulario: FormGroup;
+  uploadEmAndamento = false;
 
   constructor(
     private categoriaService: CategoriaService,
@@ -75,7 +76,9 @@ export class LancamentoCadastroComponent implements OnInit {
         codigo: [null, Validators.required],
         nome: [null]
       }),
-      observacao: [null]
+      observacao: [null],
+      anexo: [],
+      urlAnexo: []
     });
   }
 
@@ -87,6 +90,44 @@ export class LancamentoCadastroComponent implements OnInit {
     return (input: FormControl) => {
       return (!input.value || input.value.length >= valor) ? null : {tamanhoMinimo: { tamanho: valor }};
     };
+  }
+
+  get urlUploadAnexo () {
+    return this.lancamentoService.urlUploadAnexo();
+  }
+
+  antesUploadAnexo(event) {
+    this.uploadEmAndamento = true;
+    event.xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token'));
+  }
+
+  aoTerminarUploadAnexo(event) {
+    const anexo = JSON.parse(event.xhr.response);
+    this.formulario.patchValue({
+      anexo: anexo.nome,
+      urlAnexo: anexo.url
+    });
+    this.uploadEmAndamento = false;
+  }
+
+  erroUpload(event) {
+    this.toasty.error('Erro ao tentar enviar o anexo');
+    this.uploadEmAndamento = false;
+  }
+
+  get nomeAnexo() {
+    const nome = this.formulario.get('anexo').value;
+    if (nome) {
+      return nome.substring(nome.indexOf('_') + 1 , nome.length);
+    }
+    return '';
+  }
+
+  removerAnexo() {
+    this.formulario.patchValue({
+      anexo: null,
+      urlAnexo: null
+    });
   }
 
   get editando() {

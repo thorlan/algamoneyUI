@@ -15,6 +15,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
+import { FileUploadModule } from 'primeng/fileupload';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { LancamentosRoutingModule } from './lancamentos-routing.module';
 import { LancamentosPesquisaComponent } from './lancamentos-pesquisa/lancamentos-pesquisa.component';
@@ -41,6 +43,8 @@ import { SharedModule } from '../shared/shared.module';
     HttpClientModule,
     SharedModule,
     HttpModule,
+    FileUploadModule,
+    ProgressSpinnerModule,
 
     LancamentosRoutingModule
   ],

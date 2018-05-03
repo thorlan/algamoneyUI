@@ -18,6 +18,12 @@
     <li class="navbar-menuitem" routerLinkActive="ativo" *ngIf="authService.temPermissao('ROLE_PESQUISAR_PESSOA')">
       <a routerLink="/pessoas">Pessoas</a>
     </li>
+    <li class="navbar-menuitem" routerLinkActive="ativo" *ngIf="authService.temPermissao('ROLE_PESQUISAR_LANCAMENTO')">
+      <a routerLink="/relatorios/lancamentos">Relatórios</a>
+    </li>
+    <li class="navbar-menuitem" routerLinkActive="ativo" *ngIf="authService.temPermissao('ROLE_PESQUISAR_LANCAMENTO')">
+      <a routerLink="/dashboard">DashBoard</a>
+    </li>
     <li class="navbar-menuitem">
       <a href="javascript:;" (click)="logout()">Logout</a>
     </li>

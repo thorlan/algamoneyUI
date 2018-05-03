@@ -9,6 +9,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { JwtHelper } from 'angular2-jwt';
 
+
+import { DashboardService } from './../dashboard/dashboard.service';
 import { CategoriaService } from './../categorias/categoria.service';
 import { AuthService } from './../seguranca/auth.service';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -17,6 +19,7 @@ import { PessoaService } from '../pessoas/pessoa.service';
 import { LancamentoService } from '../lancamentos/lancamento.service';
 import { PaginaNaoEncontradaComponent } from './pagina-nao-encontrada.component';
 import { NaoAutorizadoComponent } from './nao-autorizado.component';
+import { RelatoriosService } from '../relatorios/relatorios.service';
 
 registerLocaleData(localePt);
 
@@ -44,8 +47,10 @@ registerLocaleData(localePt);
     PessoaService,
     CategoriaService,
     AuthService,
-
+    DashboardService,
     ConfirmationService,
+    RelatoriosService,
+
     JwtHelper,
     Title,
     {provide: LOCALE_ID, useValue: 'pt'}
